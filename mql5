@@ -1,0 +1,171 @@
+
+// Ziwox COT Report - Forex Trading Robot
+// Developer: Forex Robot Easy Team - forexroboteasy.com
+// Date: [Current Date]
+
+// Import necessary libraries
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+// Define trader categories
+enum TraderCategory {
+    COMMERCIAL,
+    NON_COMMERCIAL,
+    NON_REPORTABLE
+};
+
+// Define struct for trader data
+struct TraderData {
+    TraderCategory category;
+    int position;
+};
+
+// Function to extract data from COT report
+vector<TraderData> extractDataFromCOTReport(string filePath) {
+    vector<TraderData> traders;
+    
+    // Open COT report file
+    ifstream file(filePath);
+    if (!file.is_open()) {
+        cout << 'Error: Unable to open COT report file.' << endl;
+        return traders;
+    }
+    
+    // Read and process data from COT report
+    string line;
+    while (getline(file, line)) {
+        // Parse line and extract trader data
+        // Assuming data format: [Trader Category], [Position]
+        string categoryStr, positionStr;
+        size_t commaPos = line.find(',');
+        if (commaPos != string::npos) {
+            categoryStr = line.substr(0, commaPos);
+            positionStr = line.substr(commaPos + 1);
+        }
+        
+        // Convert category and position to appropriate types
+        TraderCategory category;
+        int position;
+        if (categoryStr == 'Commercial') {
+            category = COMMERCIAL;
+        } else if (categoryStr == 'Non-Commercial') {
+            category = NON_COMMERCIAL;
+        } else if (categoryStr == 'Non-Reportable') {
+            category = NON_REPORTABLE;
+        } else {
+            cout << 'Error: Invalid trader category.' << endl;
+            continue;
+        }
+        
+        try {
+            position = stoi(positionStr);
+        } catch (const exception& e) {
+            cout << 'Error: Invalid position value.' << endl;
+            continue;
+        }
+        
+        // Create trader data object and add to vector
+        TraderData traderData;
+        traderData.category = category;
+        traderData.position = position;
+        traders.push_back(traderData);
+    }
+    
+    // Close COT report file
+    file.close();
+    
+    return traders;
+}
+
+// Function to classify traders based on positions
+void classifyTraders(const vector<TraderData>& traders) {
+    int commercialCount = 0;
+    int nonCommercialCount = 0;
+    int nonReportableCount = 0;
+    
+    for (const TraderData& trader : traders) {
+        switch (trader.category) {
+            case COMMERCIAL:
+                commercialCount++;
+                break;
+            case NON_COMMERCIAL:
+                nonCommercialCount++;
+                break;
+            case NON_REPORTABLE:
+                nonReportableCount++;
+                break;
+            default:
+                break;
+        }
+    }
+    
+    // Display trader classification
+    cout << 'Trader Classification:' << endl;
+    cout << 'Commercial Traders: ' << commercialCount << endl;
+    cout << 'Non-Commercial Traders: ' << nonCommercialCount << endl;
+    cout << 'Non-Reportable Traders: ' << nonReportableCount << endl;
+}
+
+// Function to calculate total positions held by each category of traders
+void calculatePositions(const vector<TraderData>& traders) {
+    int commercialPosition = 0;
+    int nonCommercialPosition = 0;
+    int nonReportablePosition = 0;
+    
+    for (const TraderData& trader : traders) {
+        switch (trader.category) {
+            case COMMERCIAL:
+                commercialPosition += trader.position;
+                break;
+            case NON_COMMERCIAL:
+                nonCommercialPosition += trader.position;
+                break;
+            case NON_REPORTABLE:
+                nonReportablePosition += trader.position;
+                break;
+            default:
+                break;
+        }
+    }
+    
+    // Display total positions
+    cout << 'Total Positions:' << endl;
+    cout << 'Commercial Traders: ' << commercialPosition << endl;
+    cout << 'Non-Commercial Traders: ' << nonCommercialPosition << endl;
+    cout << 'Non-Reportable Traders: ' << nonReportablePosition << endl;
+}
+
+// Function to generate comprehensive report on market trends
+void generateMarketReport(const vector<TraderData>& traders) {
+    // Generate report based on trader positions
+    // Add necessary code here to generate the report
+    
+    // Display market report
+    cout << 'Market Report:' << endl;
+    cout << '------------------------------------' << endl;
+    cout << '[Add Market Report Here]' << endl;
+    cout << '------------------------------------' << endl;
+}
+
+int main() {
+    // Specify COT report file path
+    string cotReportFilePath = 'cot_report.csv';
+    
+    // Extract data from COT report
+    vector<TraderData> traders = extractDataFromCOTReport(cotReportFilePath);
+    
+    // Classify traders
+    classifyTraders(traders);
+    
+    // Calculate positions
+    calculatePositions(traders);
+    
+    // Generate market report
+    generateMarketReport(traders);
+    
+    return 0;
+}
